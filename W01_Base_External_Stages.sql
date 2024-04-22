@@ -1,30 +1,44 @@
--- Create database & schema
-CREATE DATABASE FROSTY_FRIDAY;
-USE DATABASE FROSTY_FRIDAY;
-CREATE SCHEMA FROSTY_FRIDAY_W1;
+-- grant warehouse usage to sysadmin
+use role securityadmin;
 
--- create stage and check what's inside
-CREATE STAGE FROSTY_FRIDAY_W1_STAGE
-URL = 's3://frostyfridaychallenges/challenge_1/';
-LIST @FROSTY_FRIDAY_W1_STAGE;
-SELECT $1 FROM @FROSTY_FRIDAY_W1_STAGE;
+grant usage on warehouse compute_wh to role sysadmin;
+
+-- create DB, Schema, Stage 
+use role sysadmin;
+
+create or replace database FROSTY_FRIDAYS;
+use database FROSTY_FRIDAYS;
+create or replace schema WEEK_1;
+
+create or replace stage FF_W1_STAGE
+    url = 's3://frostyfridaychallenges/challenge_1/'
+;
+
+-- check what's in the stage and in a file
+list @FF_W1_STAGE;  --> three CSV files
+
+select $1 from @FROSTY_FRIDAYS.PUBLIC.FF_W1_STAGE;
 
 -- create file format
-CREATE OR REPLACE FILE FORMAT FROSTY_FRIDAY_W1_FF
+CREATE OR REPLACE FILE FORMAT FF_W1_FF
     SKIP_HEADER = 1
     TYPE = 'CSV'
     FIELD_DELIMITER = ',';
-    
+
 -- create table
-CREATE or replace TABLE FROSTY_FRIDAY_W1_TABLE (
-COLUMN_1 VARCHAR
+create or replace table FF_W1_TABLE (
+    COLUMN_1 VARCHAR
 );
 
 -- copy into table
-COPY INTO FROSTY_FRIDAY_W1_TABLE
-FROM @FROSTY_FRIDAY_W1_STAGE
-PATTERN = '.*[1-3].csv'
-FILE_FORMAT = (format_name = 'FROSTY_FRIDAY_W1_FF')
+COPY INTO FF_W1_TABLE
+    FROM @FF_W1_STAGE
+    PATTERN = '.*[1-3].csv'
+    FILE_FORMAT = (format_name = 'FF_W1_FF')
 ;
 
-SELECT * FROM FROSTY_FRIDAY.FROSTY_FRIDAY_W1.FROSTY_FRIDAY_W1_TABLE;
+-- check the output
+select
+    *
+from FF_W1_TABLE
+;
