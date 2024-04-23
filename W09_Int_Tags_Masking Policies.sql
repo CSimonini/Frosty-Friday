@@ -1,7 +1,13 @@
-USE ROLE sysadmin;
-USE WAREHOUSE compute_wh;
-USE DATABASE frosty_friday;
-CREATE OR REPLACE SCHEMA w9_intermediate;
+-- use role securityadmin;
+
+-- grant usage on warehouse compute_wh to role sysadmin;
+
+use role sysadmin;
+
+-- create or replace database FROSTY_FRIDAYS;
+use database FROSTY_FRIDAYS;
+create or replace schema WEEK_9;
+use schema WEEK_9;
 
 --CREATE DATA
 CREATE OR REPLACE TABLE data_to_be_masked(first_name varchar, last_name varchar,hero_name varchar);
@@ -16,21 +22,29 @@ INSERT INTO data_to_be_masked (first_name, last_name, hero_name) VALUES ('Darnel
 INSERT INTO data_to_be_masked (first_name, last_name, hero_name) VALUES ('Micky', 'Shillan','Switcher');
 INSERT INTO data_to_be_masked (first_name, last_name, hero_name) VALUES ('Ware', 'Ledstone','Optimo');
 
+-------------------------------
 -- Grant permissions for the created roles
-GRANT ALL ON DATABASE frosty_friday TO ROLE FOO1;
-GRANT ALL ON DATABASE frosty_friday TO ROLE FOO2;
 
-GRANT ALL ON SCHEMA w9_intermediate TO ROLE FOO1;
-GRANT ALL ON SCHEMA w9_intermediate TO ROLE FOO2;
+USE ROLE useradmin;
+CREATE OR REPLACE ROLE FOO1;
+CREATE OR REPLACE ROLE FOO2;
+
+GRANT ROLE FOO1 TO ROLE USERADMIN;
+GRANT ROLE FOO2 TO ROLE USERADMIN;
+
+USE ROLE ACCOUNTADMIN;
+GRANT ALL ON DATABASE FROSTY_FRIDAYS TO ROLE FOO1;
+GRANT ALL ON DATABASE FROSTY_FRIDAYS TO ROLE FOO2;
+
+GRANT ALL ON SCHEMA WEEK_9 TO ROLE FOO1;
+GRANT ALL ON SCHEMA WEEK_9 TO ROLE FOO2;
 
 
 GRANT ALL ON TABLE data_to_be_masked TO ROLE FOO1;
 GRANT ALL ON TABLE data_to_be_masked TO ROLE FOO2;
 
-USE ROLE accountadmin;
 GRANT USAGE ON WAREHOUSE compute_wh TO ROLE FOO1;
 GRANT USAGE ON WAREHOUSE compute_wh TO ROLE FOO2;
-
 
 -------------------------------
 -- Tags to columns
